@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<!-- saved from url=(0057)file:///Users/andreasnaujoks/Downloads/anwesenheit_3.html -->
+<html lang="de"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Anwesenheit">
+<title>Anwesenheit</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f5f0;--surface:#fff;--surface2:#f0f0eb;--border:#e0e0d8;--border2:#c8c8c0;
+  --text:#1a1a1a;--text2:#666;--text3:#999;
+  --green:#0f6e56;--green-bg:#eaf3de;--green-mid:#5dcaa5;
+  --radius:10px;--radius-sm:7px;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1c1c1e;--surface:#2c2c2e;--surface2:#3a3a3c;--border:#48484a;--border2:#636366;
+  --text:#f2f2f7;--text2:#aeaeb2;--text3:#636366;
+  --green:#5dcaa5;--green-bg:#0f3028;--green-mid:#1d9e75;
+}}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;background:var(--bg);min-height:100vh;color:var(--text)}
+.topbar{background:var(--surface);border-bottom:0.5px solid var(--border);padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+.topbar h1{font-size:17px;font-weight:600;white-space:nowrap}
+.klasse-row{display:flex;align-items:center;gap:6px}
+select{font-size:15px;padding:7px 10px;border-radius:var(--radius-sm);border:0.5px solid var(--border2);background:var(--surface2);color:var(--text);min-width:100px;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:28px}
+.btn{font-size:14px;padding:7px 13px;border-radius:var(--radius-sm);border:0.5px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.btn:active{opacity:0.7}
+.btn-danger{border-color:#f09595;color:#a32d2d}
+.btn-add{border-color:var(--green-mid);color:var(--green)}
+.btn-icon{font-size:16px;padding:7px 10px}
+.spacer{flex:1}
+.table-wrap{overflow-x:auto;padding:12px 16px;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;background:var(--surface);border-radius:var(--radius);overflow:hidden;border:0.5px solid var(--border);min-width:100%}
+thead tr:first-child th{font-size:12px;font-weight:500;color:var(--text2);padding:10px 8px 4px;border-bottom:none;border-right:0.5px solid var(--border);background:var(--surface2);text-align:center;white-space:nowrap}
+thead tr:first-child th.name-th{text-align:left;min-width:80px;position:sticky;left:0;z-index:2}
+thead tr:first-child th.vname-th{text-align:left;min-width:80px;position:sticky;left:var(--nw,120px);z-index:2}
+thead tr.subhead th{font-size:11px;font-weight:400;color:var(--text2);padding:2px 8px 8px;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);background:var(--surface2);text-align:center;white-space:nowrap}
+thead tr.subhead th.name-th{position:sticky;left:0;z-index:2}
+thead tr.subhead th.vname-th{position:sticky;left:var(--nw,120px);z-index:2}
+thead tr.subhead th.sum-sub{color:var(--green);font-weight:500}
+th.sum-group{background:var(--green-bg);color:var(--green)}
+td{padding:5px 4px;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);text-align:center;vertical-align:middle}
+td.name-td{text-align:left;padding:5px 10px;font-size:14px;color:var(--text);position:sticky;left:0;background:var(--surface);z-index:1;white-space:nowrap}
+td.vname-td{text-align:left;padding:5px 10px;font-size:14px;color:var(--text2);position:sticky;left:var(--nw,120px);background:var(--surface);z-index:1;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tfoot td{background:var(--surface2);font-size:12px;font-weight:500;padding:7px 4px;border-top:0.5px solid var(--border2);text-align:center;color:var(--text2)}
+tfoot td.name-td{text-align:left;padding:7px 10px;position:sticky;left:0;background:var(--surface2);z-index:1}
+tfoot td.vname-td{position:sticky;left:var(--nw,120px);background:var(--surface2);z-index:1}
+tfoot td.col-sum{color:var(--green)}
+.cell-btn{width:48px;height:40px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto;border-radius:8px;font-size:20px;flex-direction:column;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.cell-btn:active{background:var(--surface2)}
+.cell-btn.marked{background:var(--green-bg);color:var(--green)}
+.date-chip{font-size:10px;color:var(--green);display:block;font-weight:400;line-height:1.2}
+.col-del{font-size:11px;padding:2px 5px;border:0.5px solid var(--border2);border-radius:5px;background:transparent;color:var(--text3);cursor:pointer;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.sum-td{font-size:14px;font-weight:600;color:var(--green)}
+.sum-td-zero{font-size:13px;color:var(--text3)}
+.sum-td-bg{background:var(--green-bg)}
+.empty{text-align:center;padding:48px;color:var(--text2);font-size:15px}
+.sort-row{display:flex;align-items:center;gap:8px;padding:8px 16px 0;flex-wrap:wrap}
+.sort-row label{font-size:13px;color:var(--text2)}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;display:flex;align-items:flex-end;justify-content:center}
+@media(min-height:600px){.modal-bg{align-items:center}}
+.modal{background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;padding:20px;width:100%;max-width:480px;border:0.5px solid var(--border);padding-bottom:max(20px,env(safe-area-inset-bottom))}
+@media(min-height:600px){.modal{border-radius:var(--radius);margin:16px;padding-bottom:20px}}
+.modal h2{font-size:17px;font-weight:600;margin-bottom:14px}
+.modal input[type=text]{display:block;font-size:16px;padding:10px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--border2);background:var(--surface2);color:var(--text)}
+.input-row{display:flex;gap:8px;margin-bottom:10px}
+.input-row input{flex:1;min-width:0}
+.input-full{width:100%;margin-bottom:10px}
+.modal textarea{width:100%;margin-bottom:10px;display:block;font-size:14px;padding:10px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--border2);background:var(--surface2);color:var(--text);height:160px;resize:vertical;font-family:inherit}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+.sheet-item{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:0.5px solid var(--border);cursor:pointer}
+.sheet-item:last-child{border-bottom:none}
+.sheet-item-icon{font-size:18px;width:28px;text-align:center}
+.sheet-item-label{font-size:15px;color:var(--text);flex:1}
+.sheet-item-label.danger{color:#a32d2d}
+.hint{font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.5}
+.csv-drop{border:1.5px dashed var(--border2);border-radius:var(--radius-sm);padding:16px;text-align:center;font-size:14px;color:var(--text2);margin-bottom:10px;cursor:pointer}
+.csv-drop.over{border-color:var(--green-mid);color:var(--green)}
+.lbl{font-size:12px;color:var(--text2);margin-bottom:4px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Anwesenheit</h1>
+  <div class="klasse-row">
+    <select id="klasseSelect"><option value="6c">6c</option><option value="9b">9b</option><option value="10b">10b</option><option value="10c">10c</option></select>
+    <button class="btn btn-icon" onclick="openKlasseSheet()" title="Klasse bearbeiten">✎</button>
+  </div>
+  <button class="btn btn-add" onclick="openModal(&#39;modalKlasse&#39;)">+ Klasse</button>
+  <button class="btn btn-add" onclick="openModal(&#39;modalSpalte&#39;)">+ Spalte</button>
+  <div class="spacer"></div>
+  <button class="btn" onclick="exportCSV()">CSV</button>
+  <button class="btn btn-danger" onclick="clearKlasse()">Reset</button>
+</div>
+
+<div class="sort-row">
+  <label>Sortieren:</label>
+  <select id="sortSelect" onchange="renderTable()" style="font-size:13px;padding:4px 28px 4px 8px;min-width:0">
+    <option value="name">Nachname</option>
+    <option value="vname">Vorname</option>
+    <option value="sum_desc">Summe ↓</option>
+    <option value="sum_asc">Summe ↑</option>
+  </select>
+</div>
+
+<div class="table-wrap" id="tableWrap"><table style="--nw:140px"><thead><tr><th class="name-th" rowspan="2" style="vertical-align:bottom;border-bottom:0.5px solid var(--border)">Nachname</th><th class="vname-th" rowspan="2" style="vertical-align:bottom;border-bottom:0.5px solid var(--border)">Vorname</th><th><div style="display:flex;align-items:center;justify-content:center;gap:4px">Vergessene HA<button class="col-del" onclick="delSpalte(0)">×</button></div></th><th><div style="display:flex;align-items:center;justify-content:center;gap:4px">Fehlend<button class="col-del" onclick="delSpalte(1)">×</button></div></th><th><div style="display:flex;align-items:center;justify-content:center;gap:4px">Entschuldigt<button class="col-del" onclick="delSpalte(2)">×</button></div></th><th class="sum-group" colspan="3">Summe je Kategorie</th><th rowspan="2" style="vertical-align:bottom;border-bottom:0.5px solid var(--border)">
+    <div style="display:flex;flex-direction:column;gap:4px;align-items:center">
+      <button class="btn btn-add" style="font-size:12px;padding:4px 8px" onclick="openModal(&#39;modalSchueler&#39;)">+ Name</button>
+      <button class="btn btn-add" style="font-size:12px;padding:4px 8px" onclick="openModal(&#39;modalCSV&#39;)">CSV</button>
+    </div></th></tr><tr class="subhead"><th>Datum</th><th>Datum</th><th>Datum</th><th class="sum-sub">Vergessene HA</th><th class="sum-sub">Fehlend</th><th class="sum-sub">Entschuldigt</th></tr></thead><tbody><tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2);font-size:14px">
+      Noch keine Schüler – Namen eingeben oder CSV importieren</td></tr></tbody><tfoot><tr><td class="name-td">Summe</td><td class="vname-td"></td><td></td><td></td><td></td><td class="">–</td><td class="">–</td><td class="">–</td><td></td></tr></tfoot></table></div>
+
+<!-- Klasse-Sheet -->
+<div class="modal-bg" id="sheetKlasse" style="display:none">
+  <div class="modal">
+    <h2 id="sheetKlasseTitle">Klasse bearbeiten</h2>
+    <div class="sheet-item" onclick="openUmbenennen()">
+      <span class="sheet-item-icon">✎</span><span class="sheet-item-label">Umbenennen</span>
+    </div>
+    <div class="sheet-item" onclick="openSpalteUmbenennen()">
+      <span class="sheet-item-icon">⇄</span><span class="sheet-item-label">Spalte umbenennen</span>
+    </div>
+    <div class="sheet-item" onclick="deleteKlasse()">
+      <span class="sheet-item-icon">🗑</span><span class="sheet-item-label danger">Klasse löschen</span>
+    </div>
+    <div class="modal-actions" style="margin-top:14px">
+      <button class="btn" onclick="closeModal(&#39;sheetKlasse&#39;)">Schließen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Umbenennen -->
+<div class="modal-bg" id="modalUmbenennen" style="display:none">
+  <div class="modal">
+    <h2>Klasse umbenennen</h2>
+    <input type="text" id="umbenennenInput" class="input-full" autocomplete="off" autocorrect="off">
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal(&#39;modalUmbenennen&#39;)">Abbrechen</button>
+      <button class="btn btn-add" onclick="saveUmbenennen()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- Spalte umbenennen -->
+<div class="modal-bg" id="modalSpalteUmbenennen" style="display:none">
+  <div class="modal">
+    <h2>Spalte umbenennen</h2>
+    <select id="spalteUmbenennenSelect" style="width:100%;margin-bottom:10px;font-size:16px;padding:10px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--border2);background:var(--surface2);color:var(--text);-webkit-appearance:none;appearance:none"></select>
+    <input type="text" id="spalteUmbenennenInput" class="input-full" placeholder="Neuer Name" autocomplete="off" autocorrect="off">
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal(&#39;modalSpalteUmbenennen&#39;)">Abbrechen</button>
+      <button class="btn btn-add" onclick="saveSpalteUmbenennen()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- Neue Klasse -->
+<div class="modal-bg" id="modalKlasse" style="display:none">
+  <div class="modal">
+    <h2>Neue Klasse</h2>
+    <input type="text" id="newKlasseName" class="input-full" placeholder="z. B. 8b" autocomplete="off" autocorrect="off">
+    <div id="newSpaltenList"></div>
+    <button class="btn btn-add" onclick="addSpaltenInput()" style="margin-bottom:10px;font-size:13px">+ Spalte</button>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal(&#39;modalKlasse&#39;)">Abbrechen</button>
+      <button class="btn btn-add" onclick="saveNewKlasse()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- Neue Spalte -->
+<div class="modal-bg" id="modalSpalte" style="display:none">
+  <div class="modal">
+    <h2>Neue Spalte</h2>
+    <input type="text" id="newSpaltenName" class="input-full" placeholder="Spaltenbezeichnung" autocomplete="off" autocorrect="off">
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal(&#39;modalSpalte&#39;)">Abbrechen</button>
+      <button class="btn btn-add" onclick="saveNewSpalte()">Hinzufügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Schüler hinzufügen -->
+<div class="modal-bg" id="modalSchueler" style="display:none">
+  <div class="modal">
+    <h2>Schüler/in hinzufügen</h2>
+    <div class="input-row">
+      <div style="flex:1">
+        <div class="lbl">Nachname</div>
+        <input type="text" id="newNachname" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" placeholder="Meier">
+      </div>
+      <div style="flex:1">
+        <div class="lbl">Vorname</div>
+        <input type="text" id="newVorname" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" placeholder="Tom">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal(&#39;modalSchueler&#39;)">Schließen</button>
+      <button class="btn btn-add" onclick="saveNewSchueler()">Hinzufügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- CSV-Import -->
+<div class="modal-bg" id="modalCSV" style="display:none">
+  <div class="modal">
+    <h2>Schüler per CSV importieren</h2>
+    <p class="hint">Erwartet wird eine CSV mit mindestens zwei Spalten:<br>
+      <strong>Spalte 1 = Nachname, Spalte 2 = Vorname</strong><br>
+      Trennzeichen: Semikolon oder Komma. Eine Kopfzeile wird automatisch erkannt und übersprungen.</p>
+    <div class="csv-drop" id="csvDrop" onclick="document.getElementById(&#39;csvFile&#39;).click()">
+      CSV-Datei antippen zum Auswählen
+    </div>
+    <input type="file" id="csvFile" accept=".csv,.txt" style="display:none" onchange="handleCSVFile(this)">
+    <textarea id="csvText" placeholder="...oder Daten hier einfügen
+Meier;Tom
+Bauer;Anna"></textarea>
+    <div id="csvPreview" style="font-size:13px;color:var(--text2);margin-bottom:8px"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal(&#39;modalCSV&#39;)">Abbrechen</button>
+      <button class="btn btn-add" onclick="importCSV()">Importieren</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORE='anw_v5';
+
+function defaultDB(){
+  return {
+    klassen:[
+      {id:'6c', name:'6c', spalten:['Vergessene HA','Fehlend','Entschuldigt'], schueler:[]},
+      {id:'9b', name:'9b', spalten:['Vergessene HA','Fehlend','Entschuldigt'], schueler:[]},
+      {id:'10b',name:'10b',spalten:['Vergessene HA','Fehlend','Entschuldigt'], schueler:[]},
+      {id:'10c',name:'10c',spalten:['Vergessene HA','Fehlend','Entschuldigt'], schueler:[]}
+    ],
+    marks:{}
+  };
+}
+
+// migrate: schueler entries that are plain strings → {nachname, vorname}
+function migrate(db){
+  db.klassen.forEach(kl=>{
+    kl.schueler=kl.schueler.map(s=>{
+      if(typeof s==='string'){
+        const parts=s.split(',').map(p=>p.trim());
+        return{nachname:parts[0]||s, vorname:parts[1]||''};
+      }
+      return s;
+    });
+  });
+  return db;
+}
+
+let DB;
+try{
+  const raw=localStorage.getItem(STORE);
+  DB=raw?migrate(JSON.parse(raw)):defaultDB();
+}catch(e){DB=defaultDB();}
+
+function save(){
+  try{localStorage.setItem(STORE,JSON.stringify(DB));}
+  catch(e){alert('Speicherfehler: '+e.message);}
+}
+
+let cur=DB.klassen[0]?.id||null;
+function mkey(kl,sch,sp){return kl+'§'+sch.nachname+'§'+sch.vorname+'§'+sp}
+function getKl(id){return DB.klassen.find(k=>k.id===id)}
+function schId(s){return s.nachname+'|'+s.vorname}
+function findSch(kl,id){return kl.schueler.find(s=>schId(s)===id)}
+
+function renderSelect(){
+  const sel=document.getElementById('klasseSelect');
+  sel.innerHTML=DB.klassen.map(k=>`<option value="${k.id}">${k.name}</option>`).join('');
+  if(cur&&getKl(cur))sel.value=cur;
+  else if(DB.klassen.length){cur=DB.klassen[0].id;sel.value=cur;}
+  sel.onchange=()=>{cur=sel.value;renderTable()};
+}
+
+function renderTable(){
+  const kl=getKl(cur);
+  const wrap=document.getElementById('tableWrap');
+  if(!kl){wrap.innerHTML='<div class="empty">Keine Klasse angelegt</div>';return}
+
+  const rowT={},colT={};
+  kl.schueler.forEach(sch=>{
+    const id=schId(sch);
+    rowT[id]={};
+    kl.spalten.forEach(sp=>{
+      const hit=!!DB.marks[mkey(kl.id,sch,sp)];
+      rowT[id][sp]=hit?1:0;
+      colT[sp]=(colT[sp]||0)+(hit?1:0);
+    });
+  });
+
+  const sort=document.getElementById('sortSelect').value;
+  let schueler=[...kl.schueler];
+  const sumOf=s=>kl.spalten.reduce((n,sp)=>n+rowT[schId(s)][sp],0);
+  if(sort==='vname') schueler.sort((a,b)=>a.vorname.localeCompare(b.vorname,'de')||a.nachname.localeCompare(b.nachname,'de'));
+  else if(sort==='sum_desc') schueler.sort((a,b)=>sumOf(b)-sumOf(a));
+  else if(sort==='sum_asc') schueler.sort((a,b)=>sumOf(a)-sumOf(b));
+  else schueler.sort((a,b)=>a.nachname.localeCompare(b.nachname,'de')||a.vorname.localeCompare(b.vorname,'de'));
+
+  // measure name column width for sticky offset
+  const nw=140;
+
+  let h=`<table style="--nw:${nw}px"><thead><tr>`;
+  h+=`<th class="name-th" rowspan="2" style="vertical-align:bottom;border-bottom:0.5px solid var(--border)">Nachname</th>`;
+  h+=`<th class="vname-th" rowspan="2" style="vertical-align:bottom;border-bottom:0.5px solid var(--border)">Vorname</th>`;
+  kl.spalten.forEach((sp,si)=>{
+    h+=`<th><div style="display:flex;align-items:center;justify-content:center;gap:4px">${sp}<button class="col-del" onclick="delSpalte(${si})">×</button></div></th>`;
+  });
+  h+=`<th class="sum-group" colspan="${kl.spalten.length}">Summe je Kategorie</th>`;
+  h+=`<th rowspan="2" style="vertical-align:bottom;border-bottom:0.5px solid var(--border)">
+    <div style="display:flex;flex-direction:column;gap:4px;align-items:center">
+      <button class="btn btn-add" style="font-size:12px;padding:4px 8px" onclick="openModal('modalSchueler')">+ Name</button>
+      <button class="btn btn-add" style="font-size:12px;padding:4px 8px" onclick="openModal('modalCSV')">CSV</button>
+    </div></th>`;
+  h+='</tr><tr class="subhead">';
+  kl.spalten.forEach(()=>h+=`<th>Datum</th>`);
+  kl.spalten.forEach(sp=>h+=`<th class="sum-sub">${sp}</th>`);
+  h+='</tr></thead><tbody>';
+
+  if(kl.schueler.length===0){
+    h+=`<tr><td colspan="${kl.spalten.length*2+3}" style="text-align:center;padding:24px;color:var(--text2);font-size:14px">
+      Noch keine Schüler – Namen eingeben oder CSV importieren</td></tr>`;
+  } else {
+    schueler.forEach(sch=>{
+      const origIdx=kl.schueler.findIndex(s=>schId(s)===schId(sch));
+      const id=schId(sch);
+      h+=`<tr>`;
+      h+=`<td class="name-td">${sch.nachname} <button class="col-del" onclick="delSchueler(${origIdx})" style="float:right;margin-top:2px">×</button></td>`;
+      h+=`<td class="vname-td">${sch.vorname}</td>`;
+      kl.spalten.forEach(sp=>{
+        const k=mkey(kl.id,sch,sp),entry=DB.marks[k];
+        const esc=encodeURIComponent(id)+'|'+encodeURIComponent(sp);
+        h+=entry
+          ?`<td><button class="cell-btn marked" onclick="toggleMark('${kl.id}','${esc}')"><span>✓</span><span class="date-chip">${entry}</span></button></td>`
+          :`<td><button class="cell-btn" onclick="toggleMark('${kl.id}','${esc}')"></button></td>`;
+      });
+      kl.spalten.forEach(sp=>{const c=rowT[id][sp];h+=`<td class="sum-td-bg ${c>0?'sum-td':'sum-td-zero'}">${c>0?c:'–'}</td>`});
+      h+=`<td></td></tr>`;
+    });
+  }
+  h+='<tfoot><tr><td class="name-td">Summe</td><td class="vname-td"></td>';
+  kl.spalten.forEach(()=>h+=`<td></td>`);
+  kl.spalten.forEach(sp=>{const c=colT[sp]||0;h+=`<td class="${c>0?'col-sum':''}">${c>0?c:'–'}</td>`});
+  h+=`<td></td></tr></tfoot></table>`;
+  wrap.innerHTML=h;
+}
+
+function toggleMark(klId,esc){
+  const p=esc.split('|');
+  const sp=decodeURIComponent(p[p.length-1]);
+  const id=decodeURIComponent(p.slice(0,-1).join('|'));
+  const kl=getKl(klId);
+  const sch=findSch(kl,id);if(!sch)return;
+  const k=mkey(klId,sch,sp);
+  if(DB.marks[k])delete DB.marks[k];
+  else{const d=new Date();DB.marks[k]=d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'});}
+  save();renderTable();
+}
+
+// CSV Import
+function parseCSVRows(text){
+  const lines=text.split(/[\r\n]+/).filter(l=>l.trim());
+  return lines.map(l=>{
+    const sep=l.includes(';')?';':',';
+    const parts=l.split(sep).map(s=>s.trim().replace(/^["']|["']$/g,''));
+    return{nachname:parts[0]||'', vorname:parts[1]||''};
+  }).filter(r=>r.nachname.length>0);
+}
+function looksLikeHeader(row){
+  const n=row.nachname.toLowerCase(),v=row.vorname.toLowerCase();
+  return['name','nachname','vorname','first','last','schüler','klasse'].some(h=>n.includes(h)||v.includes(h));
+}
+function handleCSVFile(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    document.getElementById('csvText').value=e.target.result;
+    updateCSVPreview();
+  };
+  reader.readAsText(file,'UTF-8');
+}
+function updateCSVPreview(){
+  const text=document.getElementById('csvText').value;
+  let rows=parseCSVRows(text);
+  if(rows.length&&looksLikeHeader(rows[0]))rows=rows.slice(1);
+  const kl=getKl(cur);
+  const neu=rows.filter(r=>!findSch(kl,schId(r)));
+  document.getElementById('csvPreview').textContent=
+    rows.length>0?`${rows.length} Einträge erkannt, davon ${neu.length} neu`:'';
+}
+function importCSV(){
+  const text=document.getElementById('csvText').value;
+  let rows=parseCSVRows(text);
+  if(!rows.length)return;
+  if(looksLikeHeader(rows[0]))rows=rows.slice(1);
+  const kl=getKl(cur);
+  let added=0;
+  rows.forEach(r=>{
+    if(r.nachname&&!findSch(kl,schId(r))){kl.schueler.push(r);added++;}
+  });
+  save();
+  renderTable();
+  closeModal('modalCSV');
+  if(added<rows.length)alert(`${added} neu hinzugefügt, ${rows.length-added} bereits vorhanden.`);
+}
+
+// Drag & drop
+const drop=document.getElementById('csvDrop');
+drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('over')});
+drop.addEventListener('dragleave',()=>drop.classList.remove('over'));
+drop.addEventListener('drop',e=>{
+  e.preventDefault();drop.classList.remove('over');
+  const file=e.dataTransfer.files[0];if(!file)return;
+  const inp=document.getElementById('csvFile');
+  try{const dt=new DataTransfer();dt.items.add(file);inp.files=dt.files;}catch(e){}
+  const reader=new FileReader();
+  reader.onload=ev=>{document.getElementById('csvText').value=ev.target.result;updateCSVPreview();};
+  reader.readAsText(file,'UTF-8');
+});
+document.getElementById('csvText').addEventListener('input',updateCSVPreview);
+
+// Klasse-Sheet
+function openKlasseSheet(){
+  const kl=getKl(cur);if(!kl)return;
+  document.getElementById('sheetKlasseTitle').textContent=kl.name+' bearbeiten';
+  openModal('sheetKlasse');
+}
+function openUmbenennen(){
+  closeModal('sheetKlasse');
+  document.getElementById('umbenennenInput').value=getKl(cur).name;
+  openModal('modalUmbenennen');
+  setTimeout(()=>document.getElementById('umbenennenInput').select(),150);
+}
+function saveUmbenennen(){
+  const n=document.getElementById('umbenennenInput').value.trim();if(!n)return;
+  getKl(cur).name=n;save();renderSelect();renderTable();closeModal('modalUmbenennen');
+}
+function openSpalteUmbenennen(){
+  closeModal('sheetKlasse');
+  const kl=getKl(cur);
+  const sel=document.getElementById('spalteUmbenennenSelect');
+  sel.innerHTML=kl.spalten.map((sp,i)=>`<option value="${i}">${sp}</option>`).join('');
+  document.getElementById('spalteUmbenennenInput').value=kl.spalten[0]||'';
+  sel.onchange=()=>{document.getElementById('spalteUmbenennenInput').value=kl.spalten[parseInt(sel.value)]||''};
+  openModal('modalSpalteUmbenennen');
+}
+function saveSpalteUmbenennen(){
+  const kl=getKl(cur);
+  const si=parseInt(document.getElementById('spalteUmbenennenSelect').value);
+  const n=document.getElementById('spalteUmbenennenInput').value.trim();if(!n)return;
+  kl.schueler.forEach(sch=>{
+    const old=mkey(kl.id,sch,kl.spalten[si]);
+    if(DB.marks[old]){DB.marks[mkey(kl.id,sch,n)]=DB.marks[old];delete DB.marks[old];}
+  });
+  kl.spalten[si]=n;save();renderTable();closeModal('modalSpalteUmbenennen');
+}
+function deleteKlasse(){
+  const kl=getKl(cur);
+  if(!confirm('Klasse "'+kl.name+'" und alle Daten löschen?'))return;
+  closeModal('sheetKlasse');
+  kl.schueler.forEach(sch=>kl.spalten.forEach(sp=>delete DB.marks[mkey(kl.id,sch,sp)]));
+  DB.klassen=DB.klassen.filter(k=>k.id!==cur);
+  cur=DB.klassen[0]?.id||null;
+  save();renderSelect();renderTable();
+}
+
+function openModal(id){
+  document.getElementById(id).style.display='flex';
+  if(id==='modalCSV'){
+    document.getElementById('csvText').value='';
+    document.getElementById('csvPreview').textContent='';
+    document.getElementById('csvFile').value='';
+  }
+  if(id==='modalSchueler'){
+    document.getElementById('newNachname').value='';
+    document.getElementById('newVorname').value='';
+    setTimeout(()=>document.getElementById('newNachname').focus(),100);
+    return;
+  }
+  const inp=document.querySelector('#'+id+' input[type=text]');
+  if(inp)setTimeout(()=>inp.focus(),100);
+}
+function closeModal(id){document.getElementById(id).style.display='none'}
+document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.style.display='none'}));
+
+function addSpaltenInput(){
+  const d=document.createElement('div');d.style.cssText='display:flex;gap:6px;margin-bottom:6px';
+  d.innerHTML='<input type="text" placeholder="Spaltenname" autocomplete="off" autocorrect="off" style="flex:1;font-size:16px;padding:10px 12px;border-radius:7px;border:0.5px solid var(--border2);background:var(--surface2);color:var(--text)"><button class="col-del" style="padding:5px 9px" onclick="this.parentNode.remove()">×</button>';
+  document.getElementById('newSpaltenList').appendChild(d);
+}
+function saveNewKlasse(){
+  const name=document.getElementById('newKlasseName').value.trim();if(!name)return;
+  const inputs=document.querySelectorAll('#newSpaltenList input');
+  const spalten=[...inputs].map(i=>i.value.trim()).filter(Boolean);
+  if(!spalten.length)spalten.push('Vergessene HA','Fehlend');
+  const id='k'+Date.now();
+  DB.klassen.push({id,name,spalten,schueler:[]});
+  cur=id;save();renderSelect();renderTable();closeModal('modalKlasse');
+}
+function saveNewSpalte(){
+  const n=document.getElementById('newSpaltenName').value.trim();if(!n)return;
+  getKl(cur).spalten.push(n);save();renderTable();closeModal('modalSpalte');
+}
+function delSpalte(si){
+  const kl=getKl(cur);if(!confirm('Spalte "'+kl.spalten[si]+'" löschen?'))return;
+  kl.schueler.forEach(sch=>delete DB.marks[mkey(kl.id,sch,kl.spalten[si])]);
+  kl.spalten.splice(si,1);save();renderTable();
+}
+function saveNewSchueler(){
+  const nn=document.getElementById('newNachname').value.trim();
+  const vn=document.getElementById('newVorname').value.trim();
+  if(!nn)return;
+  const kl=getKl(cur);
+  if(!findSch(kl,nn+'|'+vn))kl.schueler.push({nachname:nn,vorname:vn});
+  save();renderTable();
+  document.getElementById('newNachname').value='';
+  document.getElementById('newVorname').value='';
+  document.getElementById('newNachname').focus();
+}
+function delSchueler(si){
+  const kl=getKl(cur);
+  const sch=kl.schueler[si];
+  if(!confirm(sch.nachname+(sch.vorname?' '+sch.vorname:'')+' entfernen?'))return;
+  kl.spalten.forEach(sp=>delete DB.marks[mkey(kl.id,sch,sp)]);
+  kl.schueler.splice(si,1);save();renderTable();
+}
+function clearKlasse(){
+  const kl=getKl(cur);if(!confirm('Alle Markierungen für '+kl.name+' zurücksetzen?'))return;
+  kl.schueler.forEach(sch=>kl.spalten.forEach(sp=>delete DB.marks[mkey(kl.id,sch,sp)]));
+  save();renderTable();
+}
+function exportCSV(){
+  const kl=getKl(cur);
+  const h=['Nachname','Vorname',...kl.spalten.map(s=>s+' (Datum)'),...kl.spalten.map(s=>s+' (Σ)')].join(';');
+  const rows=kl.schueler.map(sch=>{
+    const daten=kl.spalten.map(sp=>DB.marks[mkey(kl.id,sch,sp)]||'');
+    const summen=kl.spalten.map(sp=>DB.marks[mkey(kl.id,sch,sp)]?1:0);
+    return[sch.nachname,sch.vorname,...daten,...summen].join(';');
+  });
+  const blob=new Blob([[h,...rows].join('\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=kl.name+'_anwesenheit.csv';a.click();
+}
+
+// keyboard
+document.getElementById('newNachname').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('newVorname').focus()});
+document.getElementById('newVorname').addEventListener('keydown',e=>{if(e.key==='Enter')saveNewSchueler()});
+document.getElementById('newKlasseName').addEventListener('keydown',e=>{if(e.key==='Enter')saveNewKlasse()});
+document.getElementById('newSpaltenName').addEventListener('keydown',e=>{if(e.key==='Enter')saveNewSpalte()});
+document.getElementById('umbenennenInput').addEventListener('keydown',e=>{if(e.key==='Enter')saveUmbenennen()});
+document.getElementById('spalteUmbenennenInput').addEventListener('keydown',e=>{if(e.key==='Enter')saveSpalteUmbenennen()});
+
+renderSelect();renderTable();
+</script>
+
+
+</body></html>
